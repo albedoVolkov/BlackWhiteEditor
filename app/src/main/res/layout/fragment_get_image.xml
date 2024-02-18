@@ -37,10 +37,10 @@
                 android:id="@+id/btn_open_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#3D3D3D"
+                android:background="#202020"
                 android:gravity="center"
                 android:text="выбрать фото"
-                android:textColor="#BFBCBC"
+                android:textColor="#FFFFFF"
                 android:textSize="30sp" />
         </androidx.cardview.widget.CardView>
 

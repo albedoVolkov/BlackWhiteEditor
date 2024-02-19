@@ -49,6 +49,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
     val hilt = "2.48"
     val lifecycle = "2.7.0"
     val kotlinxCoroutinesVersion = "1.7.1"

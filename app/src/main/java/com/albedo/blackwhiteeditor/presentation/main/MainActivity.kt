@@ -61,6 +61,10 @@ class MainActivity : AppCompatActivity() {
     private fun setListeners() {
         views {
             //TOOLBAR TOP
+
+            btnBack.setOnClickListener {
+                TODO()
+            }
             btnDownload.setOnClickListener {
                 TODO()
             }

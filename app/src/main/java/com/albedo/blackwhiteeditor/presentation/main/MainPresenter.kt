@@ -4,5 +4,4 @@ interface MainPresenter {
     fun downloadImage()
     fun returnBack()
     fun returnForward()
-
 }

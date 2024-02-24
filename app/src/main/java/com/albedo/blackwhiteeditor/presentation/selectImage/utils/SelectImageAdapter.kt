@@ -1,33 +1,41 @@
-package com.albedo.blackwhiteeditor.presentation.selectImage
+package com.albedo.blackwhiteeditor.presentation.selectImage.utils
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.icu.text.DateFormat.getDateInstance
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.albedo.blackwhiteeditor.databinding.ItemRslActivitySelectImageBinding
 import com.albedo.blackwhiteeditor.domain.models.LayoutImageUIState
-import java.text.SimpleDateFormat
 
-class SelectImageAdapter (private val context: Context) : RecyclerView.Adapter<SelectImageAdapter.ItemViewHolder>() {
+class SelectImageAdapter : RecyclerView.Adapter<SelectImageAdapter.ItemViewHolder>() {
 
-    val TAG = "SelectImageAdapter"
+    companion object{
+        const val TAG = "SelectImageAdapter"
+    }
+
 
     private var data : List<LayoutImageUIState> = listOf()
 
-    lateinit var onClickListener: OnClickListener
+    lateinit var onClickListenerMain: OnClickListener
+    lateinit var onClickListenerDelete: OnClickListener
 
     inner class ItemViewHolder(private var binding: ItemRslActivitySelectImageBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(itemModel: LayoutImageUIState) {
             binding.main.setOnClickListener {
-                onClickListener.onClick(itemModel)
+                onClickListenerMain.onClick(itemModel)
             }
-            binding.txtNameInfo.text = itemModel.name
 
-            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-            val date = sdf.format(itemModel.date)
+            binding.btnDeleteItem.setOnClickListener {
+                onClickListenerDelete.onClick(itemModel)
+            }
+
+            binding.txtNameInfo.text = itemModel.name
+//            getDateInstance().format(itemModel.date)
+//            val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val date = getDateInstance().format(itemModel.date)
             binding.txtDateInfo.text = date
 
 //            if (itemModel.image.isNotEmpty()) {

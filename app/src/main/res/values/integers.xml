@@ -1,0 +1,3 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <integer name="columns_SelectImageActivity" tools:ignore="MissingDefaultResource">2</integer>
+</resources>

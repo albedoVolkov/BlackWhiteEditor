@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.exifinterface:exifinterface:1.3.6")
+
     val hilt = "2.48"
     val lifecycle = "2.7.0"
     val kotlinxCoroutinesVersion = "1.7.1"
@@ -123,7 +123,8 @@ dependencies {
     //Dagger/Hilt
     implementation("com.google.dagger:hilt-android:$hilt")
     kapt("com.google.dagger:hilt-android-compiler:$hilt")
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+
 
     //Gson
     implementation ("com.google.code.gson:gson:2.10.1")

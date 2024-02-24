@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">BlackWhiteEditor</string>
+    <string name="logo">Logo</string>
+    <string name="create_new_layout">Создать новый Макет</string>
+    <string name="open_new_image">Открыть Изображение</string>
+    <string name="select_layout">Выберите Макет</string>
+    <string name="no_created_layouts">Нет созданных элементов</string>
+    <string name="name">Name</string>
+    <string name="image_content">image content</string>
+    <string name="remove_layout">remove layout</string>
+    <string name="date">date</string>
 </resources>

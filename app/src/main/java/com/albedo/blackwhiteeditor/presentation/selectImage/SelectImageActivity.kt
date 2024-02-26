@@ -1,13 +1,21 @@
 package com.albedo.blackwhiteeditor.presentation.selectImage
 
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -17,11 +25,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.albedo.blackwhiteeditor.R
 import com.albedo.blackwhiteeditor.databinding.ActivitySelectImageBinding
 import com.albedo.blackwhiteeditor.domain.models.LayoutImageUIState
+import com.albedo.blackwhiteeditor.presentation.main.MainActivity
 import com.albedo.blackwhiteeditor.presentation.selectImage.utils.SelectImageAdapter
+import com.albedo.blackwhiteeditor.presentation.utils.ConstantsUI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-
 
 
 @AndroidEntryPoint
@@ -70,10 +79,11 @@ class SelectImageActivity : AppCompatActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun setListeners() {
         views {
             containerBtnCreateNewLayout.setOnClickListener {
-                openEditFragment()
+                openBlankFragment()
             }
             containerBtnOpenNewImage.setOnClickListener {
                 openStorageWithImages()
@@ -90,7 +100,7 @@ class SelectImageActivity : AppCompatActivity() {
 
             itemAdapter.onClickListenerMain = object : SelectImageAdapter.OnClickListener {
                 override fun onClick(itemData: LayoutImageUIState) {
-                    openMainActivity()
+                    openMainActivity(itemData.id)
                 }
             }
 
@@ -101,6 +111,28 @@ class SelectImageActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    private fun setItemListInRecyclerView(list: List<LayoutImageUIState>) {
+        Log.d(TAG, "list : $list")
+        itemAdapter.setData(list)
+    }
+
+
+    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val returnString : Uri? = result.data?.data
+            Log.d(TAG, "resultLauncher : returnString - $returnString")
+            if(returnString != null){
+                val returnBitmap : Bitmap? = loadFromUri(returnString)
+                if(returnBitmap != null){
+                    openMainActivity(returnBitmap)
+                }
+            }
+        }
+
+    }
+
 
 
 
@@ -119,36 +151,62 @@ class SelectImageActivity : AppCompatActivity() {
 
 
 
+    private fun openBlankFragment() {
 
+        val bitmap = Bitmap.createBitmap(400,800,Bitmap.Config.ARGB_8888)
 
-    private fun openEditFragment() {
-        TODO()
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(ContextCompat.getColor(this, R.color.white))
+
+        openMainActivity(bitmap = bitmap)
     }
 
-   private fun openMainActivity() {
-       //item: LayoutImageUIState
-        TODO()
-//        val item : LayoutImageUIState? = null
-//
-//        this.finish()
-//        val intent = Intent(this, MainActivity::class.java)
-//        val bundle = Bundle()
-//        bundle.putString(ConstantsUI.KeyLayoutIdFromSIAToMA, item.toString())
-//        intent.putExtras(bundle)
-//        startActivity(intent)
-    }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun openStorageWithImages() {
-        TODO()
+        try {
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            Intent.createChooser(intent, "Select Picture")
+            //startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE)
+            resultLauncher.launch(intent)
+        }catch (e : Exception){
+            Log.d(TAG, "openStorageWithImages : error : $e")
+        }
     }
 
 
-    private fun setItemListInRecyclerView(list: List<LayoutImageUIState>) {
-        Log.d(TAG, "list : $list")
-        itemAdapter.setData(list)
+   private fun openMainActivity(id: String) {
+        this.finish()
+        val intent = Intent(this, MainActivity::class.java)
+        val bundle = Bundle()
+        bundle.putString(ConstantsUI.KeyLayoutIdFromSIAToMA, id)
+        intent.putExtras(bundle)
+        startActivity(intent)
+    }
+
+    private fun openMainActivity(bitmap: Bitmap) {
+        this.finish()
+        val intent = Intent(this, MainActivity::class.java)
+        val bundle = Bundle()
+
+        bundle.putString(ConstantsUI.KeyBitmapFromSIAToMA, bitmap.toString())
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
 
+
+    private fun loadFromUri(uri : Uri) : Bitmap?{
+        try{
+            val source : ImageDecoder.Source = ImageDecoder.createSource(contentResolver, uri)
+            return ImageDecoder.decodeBitmap(source)
+        }catch (e : Exception){
+            Log.d(TAG, "loadFromUri : error : $e")
+            return null
+        }
+    }
 
 
 
@@ -161,4 +219,5 @@ class SelectImageActivity : AppCompatActivity() {
             }
         }
     }
+
 }

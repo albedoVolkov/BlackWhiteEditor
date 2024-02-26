@@ -1,10 +1,17 @@
 package com.albedo.blackwhiteeditor.presentation.main
 
+import android.graphics.BitmapFactory
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.albedo.blackwhiteeditor.R
+import android.util.Base64
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.albedo.blackwhiteeditor.databinding.ActivityMainBinding
+import com.albedo.blackwhiteeditor.presentation.utils.ConstantsUI
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -17,12 +24,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityMainBinding
-   // private val viewModel: MainActivityViewModel by viewModels()
+    //private val viewModel: MainActivityViewModel by viewModels()
 
 
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        Log.d(TAG, "onCreate : bundle - $savedInstanceState")
+        if (savedInstanceState != null) {
+
+            val id: String? = savedInstanceState.getString(ConstantsUI.KeyLayoutIdFromSIAToMA, "")
+            Log.d(TAG, "onCreate : id - $id")
+            if (id == "" || id == null || id == "null") {
+                //if id == null then image != null
+                val stringImage: String? = savedInstanceState.getString(ConstantsUI.KeyBitmapFromSIAToMA, "")
+                val imageBytes = Base64.decode(stringImage, 0)
+                val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+            } else {
+                //if id != null then image == null
+                //TODO("action with id")
+
+            }
+        }
 
         // MVP / CHICHIRONNE / DB adapter / work with storage / work with image
 
@@ -37,14 +64,28 @@ class MainActivity : AppCompatActivity() {
     private fun <T> views(block: ActivityMainBinding.() -> T): T? = binding.block()
 
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun init() {
+        hideSystemItems()
         requireData()
         setListeners()
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun hideSystemItems() {
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        window.decorView.setOnApplyWindowInsetsListener { view, windowInsets ->
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+            view.onApplyWindowInsets(windowInsets)
+        }
+    }
+
+
 
     private fun requireData() {
-        TODO()
+       // TODO()
 //        viewModel.errorData.onEach {
 //            Log.d(TAG, "error : $it")
 //            if(it != ""){ Toast.makeText(this@MainActivity,"Ошибка при загрузке данных - $it",Toast.LENGTH_LONG).show() }
@@ -114,15 +155,5 @@ class MainActivity : AppCompatActivity() {
                 TODO()
             }
         }
-    }
-
-
-    private fun openSelectedImageFragment() {
-        TODO()
-//        val intent = Intent(this, UserInformationActivity::class.java)
-//        val bundle = Bundle()
-//        bundle.putString(ConstantsSource.KeyFromMAToUIA, itemData.id)
-//        intent.putExtras(bundle)
-//        startActivity(intent)
     }
 }

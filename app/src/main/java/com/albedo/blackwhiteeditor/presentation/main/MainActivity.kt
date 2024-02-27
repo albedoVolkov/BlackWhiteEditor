@@ -1,11 +1,14 @@
 package com.albedo.blackwhiteeditor.presentation.main
 
+import android.app.Activity
 import android.graphics.BitmapFactory
+import android.graphics.Insets
 import android.os.Build
 import android.os.Bundle
 import android.util.Base64
+import android.util.DisplayMetrics
 import android.util.Log
-import android.widget.LinearLayout
+import android.view.WindowInsets
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     //private val viewModel: MainActivityViewModel by viewModels()
+    private var paintView: PaintView? = null
 
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -99,14 +103,34 @@ class MainActivity : AppCompatActivity() {
 //        }.launchIn(viewModel.viewModelScope)
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun setViews() {
         views {
-            val paintView: PaintView = PaintView(this@MainActivity)
-            paintView.layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+
+            paintView = containerEditImage
+
+
+            paintView!!.init(getScreenWidth(this@MainActivity).second,getScreenWidth(this@MainActivity).first)
+
+        }
+    }
+
+    private fun getScreenWidth(activity: Activity): Pair<Int,Int> {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = activity.windowManager.currentWindowMetrics
+            val insets: Insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            Pair(
+                windowMetrics.bounds.width() - insets.left - insets.right,
+                windowMetrics.bounds.height() - insets.bottom - insets.top
             )
-            containerEditImage.addView(paintView)
+        } else {
+            val displayMetrics = DisplayMetrics()
+            activity.windowManager.defaultDisplay.getMetrics(displayMetrics)
+            Pair(
+                displayMetrics.widthPixels,
+                displayMetrics.heightPixels
+            )
         }
     }
 
@@ -167,4 +191,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }

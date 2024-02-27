@@ -2,15 +2,17 @@ package com.albedo.blackwhiteeditor.presentation.main
 
 import android.graphics.BitmapFactory
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.albedo.blackwhiteeditor.databinding.ActivityMainBinding
+import com.albedo.blackwhiteeditor.domain.services.drawer.PaintView
 import com.albedo.blackwhiteeditor.presentation.utils.ConstantsUI
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
+        // MVP / CHICHIRONNE / DB adapter / work with storage / work with image
         const val TAG = "MainActivity"
     }
 
@@ -32,7 +35,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        getDataFromOldActivity(savedInstanceState)
+        init()
+    }
 
+
+    private fun <T> views(block: ActivityMainBinding.() -> T): T? = binding.block()
+
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun init() {
+        hideSystemItems()
+        requireData()
+        setViews()
+        setListeners()
+    }
+
+    private fun getDataFromOldActivity(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate : bundle - $savedInstanceState")
         if (savedInstanceState != null) {
 
@@ -50,25 +69,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
-        // MVP / CHICHIRONNE / DB adapter / work with storage / work with image
-
-        // data base нужна для хранения данных
-        // InnerStorageRepository для доставания картинки
-        // ImageRepository для выполения действий с картинками
-        // ImageUIState/ ImageDB/
-        init()
-    }
-
-
-    private fun <T> views(block: ActivityMainBinding.() -> T): T? = binding.block()
-
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun init() {
-        hideSystemItems()
-        requireData()
-        setListeners()
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
             view.onApplyWindowInsets(windowInsets)
         }
     }
+
 
 
 
@@ -98,6 +99,16 @@ class MainActivity : AppCompatActivity() {
 //        }.launchIn(viewModel.viewModelScope)
     }
 
+    private fun setViews() {
+        views {
+            val paintView: PaintView = PaintView(this@MainActivity)
+            paintView.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            containerEditImage.addView(paintView)
+        }
+    }
 
     private fun setListeners() {
         views {

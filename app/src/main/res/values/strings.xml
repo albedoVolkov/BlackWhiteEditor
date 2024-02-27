@@ -9,4 +9,10 @@
     <string name="image_content">image content</string>
     <string name="remove_layout">remove layout</string>
     <string name="date">date</string>
+    <string name="button_back">button back</string>
+    <string name="increasing">Увеличение</string>
+    <string name="button_download">button download</string>
+    <string name="return_last_change">return last change</string>
+    <string name="prompt_increase_data">100%</string>
+    <string name="return_last_change_forward">return last change forward</string>
 </resources>
